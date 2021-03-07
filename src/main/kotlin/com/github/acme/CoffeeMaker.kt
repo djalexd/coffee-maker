@@ -1,12 +1,13 @@
-
 package com.github.acme
+
 /**
  * Make me some coffee!
  */
-class CoffeeMaker {
-    private var milkQuantityInMl = 0
-    private var waterQuantityInMl = 0
-    private var coffeeQuantityInGrams = 0
+class CoffeeMaker(
+        private var milkQuantityInMl: Int = 0,
+        private var waterQuantityInMl: Int = 0,
+        private var coffeeQuantityInGrams: Int = 0) {
+
     val coffeeMenu: List<String>?
         get() = null
 
@@ -18,7 +19,6 @@ class CoffeeMaker {
      * @throws NotEnoughCoffeeException
      * @throws NotEnoughMilkException
      */
-    @kotlin.jvm.Throws(NotEnoughWaterException::class, NotEnoughCoffeeException::class, NotEnoughMilkException::class)
     fun brew(coffeeType: String): CoffeeBrew? {
         return if (coffeeType == "espresso") {
 
@@ -53,7 +53,6 @@ class CoffeeMaker {
         }
     }
 
-    @kotlin.jvm.Throws(NotEnoughMilkException::class)
     fun makeMilkFoam(numberOfSeconds: Int): MilkFoam {
         val quantity = (numberOfSeconds * 5.5).toInt()
         return if (milkQuantityInMl < quantity) {
@@ -64,7 +63,6 @@ class CoffeeMaker {
         }
     }
 
-    @kotlin.jvm.Throws(NotEnoughWaterException::class)
     fun cleanItself() {
     }
 
