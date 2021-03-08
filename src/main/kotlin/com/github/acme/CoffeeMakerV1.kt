@@ -3,13 +3,13 @@ package com.github.acme
 /**
  * Make me some coffee!
  */
-class CoffeeMakerV1(
-        private var milkQuantityInMl: Int = 0,
-        private var waterQuantityInMl: Int = 0,
-        private var coffeeQuantityInGrams: Int = 0) {
-
-    val coffeeMenu: List<String>?
-        get() = null
+class CoffeeMakerV1 {
+    var milkQuantityInMl: Int = 0
+        private set
+    var waterQuantityInMl: Int = 0
+        private set
+    var coffeeQuantityInGrams: Int = 0
+        private set
 
     /**
      *
@@ -53,16 +53,6 @@ class CoffeeMakerV1(
         }
     }
 
-    fun makeMilkFoam(numberOfSeconds: Int): CoffeeBrew {
-        val quantity = (numberOfSeconds * 5.5).toInt()
-        return if (milkQuantityInMl < quantity) {
-            throw NotEnoughMilkException()
-        } else {
-            milkQuantityInMl -= quantity
-            Brews.milkFoam
-        }
-    }
-
     fun addCoffee(quantityInGrams: Int) {
         coffeeQuantityInGrams += quantityInGrams
     }
@@ -74,6 +64,8 @@ class CoffeeMakerV1(
     fun addWater(quantityInMl: Int) {
         waterQuantityInMl += quantityInMl
     }
+
+
 
     override fun toString(): String {
         val b = StringBuilder()
@@ -94,8 +86,6 @@ object Brews {
         get() = CoffeeBrew("espresso")
     val cappuccino
         get() = CoffeeBrew("cappuccino")
-    val milkFoam
-        get() = CoffeeBrew("milk foam")
 }
 
 open class NotEnoughWaterException : RuntimeException()

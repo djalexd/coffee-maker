@@ -8,7 +8,7 @@ fun main() {
     myOwnMachine.addWater(500)
     println(myOwnMachine.toString())
     Thread.sleep(5)
-    println("We just made a: ${myOwnMachine.makeMilkFoam(2)}")
+//    println("We just made a: ${myOwnMachine.makeMilkFoam(2)}")
     println(myOwnMachine.toString())
     var brewed = myOwnMachine.brew("cappuccino")
     println("We just made a: ${brewed.toString()}")
