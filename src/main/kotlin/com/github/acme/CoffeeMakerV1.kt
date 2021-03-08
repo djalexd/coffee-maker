@@ -3,7 +3,7 @@ package com.github.acme
 /**
  * Make me some coffee!
  */
-class CoffeeMaker(
+class CoffeeMakerV1(
         private var milkQuantityInMl: Int = 0,
         private var waterQuantityInMl: Int = 0,
         private var coffeeQuantityInGrams: Int = 0) {
@@ -110,6 +110,6 @@ class MilkFoam {
     }
 }
 
-internal class NotEnoughWaterException : RuntimeException()
-internal class NotEnoughCoffeeException : RuntimeException()
-internal class NotEnoughMilkException : RuntimeException("Looks like the machine doesn't have enough milk for your operation")
+open class NotEnoughWaterException : RuntimeException()
+class NotEnoughCoffeeException : RuntimeException()
+class NotEnoughMilkException : RuntimeException("Looks like the machine doesn't have enough milk for your operation")

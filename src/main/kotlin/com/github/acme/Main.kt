@@ -2,7 +2,7 @@ package com.github.acme
 
 // Entry-point in your app
 fun main() {
-    val myOwnMachine = CoffeeMaker()
+    val myOwnMachine = CoffeeMakerV1()
     myOwnMachine.addCoffee(200)
     myOwnMachine.addMilk(90)
     myOwnMachine.addWater(500)
