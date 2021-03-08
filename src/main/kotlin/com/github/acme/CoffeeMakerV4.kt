@@ -10,6 +10,11 @@ object MeasurementUnits {
 }
 
 data class Quantity(val amount: Double, val unit: MeasurementUnit): Comparable<Quantity> {
+    init {
+        if (amount < 0.0) {
+            throw IllegalArgumentException("quantity amount cannot be negative")
+        }
+    }
     fun zero() = Quantity(amount = 0.0, unit = unit)
 
     override fun compareTo(other: Quantity): Int {
@@ -33,10 +38,10 @@ data class Quantity(val amount: Double, val unit: MeasurementUnit): Comparable<Q
             a.assertSameUnit(b)
             return Quantity(max(a.amount, b.amount), a.unit)
         }
+
+        fun of(amount: Double, unit: MeasurementUnit) = Quantity(amount, unit)
     }
 }
-
-//fun Pair.doSomething() = run {}
 
 abstract class LiquidSourceV2 {
     @Throws(NotEnoughLiquidException::class)
@@ -94,25 +99,39 @@ class CoffeeContainerV2(private val containerCapacity: Quantity) {
     }
 }
 
-sealed class Ingredient
+data class BrewSize(val size: String)
 
-data class RecipeV2(
-        val name: String,
+sealed class Part(open val name: String)
+
+class RecipeV2(
+        override val name: String,
+        val size: BrewSize,
         val coffee: Quantity,
         val water: Quantity,
-        val milk: Quantity): Ingredient()
+        val milk: Quantity): Part(name)
 
-data class MiscIngredient(
-        val name: String): Ingredient()
+class ToppingName(override val name: String): Part(name)
 
-object MiscIngredients {
-    val caramel: Ingredient
-        get() = MiscIngredient("caramel")
+open class Topping(private val name: String) {
+    override fun toString() = name
 }
 
-data class Order(val parts: List<Ingredient>)
+object Toppings {
+    val caramel
+        get() = Topping("caramel")
+    val whipCream
+        get() = Topping("whip cream")
+}
 
-data class CompositeCoffeeBrew(val order: Order): CoffeeBrew(name = order.parts.joinToString(" + "))
+data class Order(val parts: List<Part>)
+
+data class CompositeCoffeeBrew(
+        val brews: List<CoffeeBrew>,
+        val toppings: List<Topping>
+): CoffeeBrew((
+        brews.map { it.toString() } +
+                toppings.map { it.toString() }
+        ).joinToString { " + " })
 
 // espresso
 // double espresso
@@ -127,9 +146,65 @@ class CoffeeMakerV4(
         private val waterSource: LiquidSourceV2,
         private val coffeeContainer: CoffeeContainerV2,
         private val recipes: List<RecipeV2>,
-        private val brewFactory: Map<String, () -> CoffeeBrew>) {
+        private val brewFactory: Map<String, () -> CoffeeBrew>,
+        private val toppingFactory: Map<String, () -> Topping>) {
 
     fun brew(order: Order): CoffeeBrew? {
+
+            val brews = order.parts
+                    .filter { it is RecipeV2 }
+                    .map { it as RecipeV2 }
+                    .map { recipe -> brew(recipe.name) }
+
+            val toppings = order.parts
+                    .filter { it is ToppingName }
+                    .map { it as ToppingName }
+                    .map { topping -> addTopping(topping) }
+
+//        return CompositeCoffeeBrew(brews, toppings)
         return null
+    }
+
+    private fun addTopping(toppingName: ToppingName): Topping? {
+        if (!toppingFactory.containsKey(toppingName.name)) {
+            return null
+        }
+        return toppingFactory[toppingName.name]!!.invoke()
+    }
+
+    private fun brew(coffeeType: String): CoffeeBrew? {
+        // Cannot find the recipe
+        if (!canBeBrewed(coffeeType)) {
+            return null
+        }
+
+        val recipe = recipes.find { recipe -> recipe.name == coffeeType }!!
+
+        throwAs(NotEnoughWaterException()) { waterSource.getAmount(recipe.water) }
+        throwAs(NotEnoughMilkException()) { milkSource.getAmount(recipe.milk) }
+
+        coffeeContainer.getAmount(recipe.coffee)
+
+        return brewFactory[coffeeType]!!.invoke()
+    }
+
+    private fun canBeBrewed(coffeeType: String): Boolean {
+        if (!recipes.any { recipe -> recipe.name == coffeeType }) {
+            return false
+        }
+        if (!brewFactory.containsKey(coffeeType)) {
+            return false
+        }
+        return true
+    }
+
+    companion object {
+        private fun throwAs(exception: Throwable, lambda: () -> Unit) {
+            try {
+                lambda.invoke()
+            } catch (e: RuntimeException) {
+                throw exception
+            }
+        }
     }
 }
