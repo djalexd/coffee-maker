@@ -152,30 +152,27 @@ class CoffeeMakerV4(
     fun brew(order: Order): CoffeeBrew? {
 
             val brews = order.parts
-                    .filter { it is RecipeV2 }
-                    .map { it as RecipeV2 }
+                    .filterIsInstance<RecipeV2>()
                     .map { recipe -> brew(recipe.name) }
 
             val toppings = order.parts
-                    .filter { it is ToppingName }
-                    .map { it as ToppingName }
+                    .filterIsInstance<ToppingName>()
                     .map { topping -> addTopping(topping) }
 
-//        return CompositeCoffeeBrew(brews, toppings)
-        return null
+        return CompositeCoffeeBrew(brews, toppings)
     }
 
-    private fun addTopping(toppingName: ToppingName): Topping? {
+    private fun addTopping(toppingName: ToppingName): Topping {
         if (!toppingFactory.containsKey(toppingName.name)) {
-            return null
+            throw IllegalArgumentException("Unknown topping ${toppingName.name}")
         }
         return toppingFactory[toppingName.name]!!.invoke()
     }
 
-    private fun brew(coffeeType: String): CoffeeBrew? {
+    private fun brew(coffeeType: String): CoffeeBrew {
         // Cannot find the recipe
         if (!canBeBrewed(coffeeType)) {
-            return null
+            throw IllegalArgumentException("Unknown brew $coffeeType")
         }
 
         val recipe = recipes.find { recipe -> recipe.name == coffeeType }!!
