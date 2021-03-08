@@ -31,7 +31,7 @@ class CoffeeMakerV1(
             }
             waterQuantityInMl -= 30
             coffeeQuantityInGrams -= 50
-            Espresso()
+            Brews.espresso
         } else if (coffeeType == "cappuccino") {
 
             // cappuccino [water 50ml, coffee 50g, milk 30ml]
@@ -47,28 +47,23 @@ class CoffeeMakerV1(
             waterQuantityInMl -= 50
             coffeeQuantityInGrams -= 50
             milkQuantityInMl -= 30
-            Cappuccino()
+            Brews.cappuccino
         } else {
             null
         }
     }
 
-    fun makeMilkFoam(numberOfSeconds: Int): MilkFoam {
+    fun makeMilkFoam(numberOfSeconds: Int): CoffeeBrew {
         val quantity = (numberOfSeconds * 5.5).toInt()
         return if (milkQuantityInMl < quantity) {
             throw NotEnoughMilkException()
         } else {
             milkQuantityInMl -= quantity
-            MilkFoam()
+            Brews.milkFoam
         }
     }
 
-    fun cleanItself() {
-    }
-
     fun addCoffee(quantityInGrams: Int) {
-        //int currentQuantity = coffeeQuantityInGrams;
-        //coffeeQuantityInGrams = currentQuantity + quantityInGrams;
         coffeeQuantityInGrams += quantityInGrams
     }
 
@@ -90,24 +85,17 @@ class CoffeeMakerV1(
     }
 }
 
-open class CoffeeBrew
-
-internal class Espresso : CoffeeBrew() {
-    override fun toString(): String {
-        return "espresso"
-    }
+open class CoffeeBrew(private val name: String) {
+    override fun toString() = name
 }
 
-internal class Cappuccino : CoffeeBrew() {
-    override fun toString(): String {
-        return "cappuccino"
-    }
-}
-
-class MilkFoam {
-    override fun toString(): String {
-        return "milk foam"
-    }
+object Brews {
+    val espresso
+        get() = CoffeeBrew("espresso")
+    val cappuccino
+        get() = CoffeeBrew("cappuccino")
+    val milkFoam
+        get() = CoffeeBrew("milk foam")
 }
 
 open class NotEnoughWaterException : RuntimeException()

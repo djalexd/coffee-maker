@@ -1,7 +1,5 @@
 package com.github.acme
 
-import java.util.function.Predicate
-
 data class Recipe(
         val name: String,
         val coffeeQuantityInGrams: Int,
@@ -38,8 +36,8 @@ class CoffeeMakerV2(
                 coffeeQuantityInGrams,
                 listOf(WellKnownRecipes.espressoRecipe, WellKnownRecipes.cappuccinoRecipe),
                 mapOf(
-                        "espresso" to { Espresso() },
-                        "cappuccino" to { Cappuccino() }
+                        "espresso" to { Brews.espresso },
+                        "cappuccino" to { Brews.cappuccino }
                 ))
     }
 
@@ -89,13 +87,13 @@ class CoffeeMakerV2(
         return true
     }
 
-    fun makeMilkFoam(numberOfSeconds: Int): MilkFoam {
+    fun makeMilkFoam(numberOfSeconds: Int): CoffeeBrew {
         val quantity = (numberOfSeconds * 5.5).toInt()
         return if (milkQuantityInMl < quantity) {
             throw NotEnoughMilkException()
         } else {
             milkQuantityInMl -= quantity
-            MilkFoam()
+            Brews.milkFoam
         }
     }
 
@@ -106,8 +104,6 @@ class CoffeeMakerV2(
     }
 
     fun addCoffee(quantityInGrams: Int) {
-        //int currentQuantity = coffeeQuantityInGrams;
-        //coffeeQuantityInGrams = currentQuantity + quantityInGrams;
         coffeeQuantityInGrams += quantityInGrams
     }
 
