@@ -1,0 +1,22 @@
+---
+recipes:
+  - name: espresso
+    coffee: 20 gr
+    water: 30 ml
+    milk: 0 ml
+  - name: double espresso
+    coffee: 40 gr
+    water: 30 ml
+    milk: 0 ml
+  - name: long espresso
+    coffee: 20 gr
+    water: 60 ml
+    milk: 0 ml
+  - name: medium americano
+    coffee: 50 gr
+    water: 250 ml
+    milk: 0 ml
+  - name: medium latte machiatto
+    coffee: 20 gr
+    water: 30 ml
+    milk: 100 ml

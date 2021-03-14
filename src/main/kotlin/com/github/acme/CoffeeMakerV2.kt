@@ -4,11 +4,12 @@ data class Recipe(
         val name: String,
         val coffeeQuantityInGrams: Int,
         val waterQuantityInMl: Int,
-        val milkQuantityInMl: Int)
+        val milkQuantityInMl: Int,
+        val generator: () -> CoffeeBrew)
 
 object WellKnownRecipes {
-    val espressoRecipe = Recipe("espresso", 50, 30, 0)
-    val cappuccinoRecipe = Recipe("cappuccino", 50, 50, 30)
+    val espressoRecipe = Recipe("espresso", 50, 30, 0) { Brews.espresso }
+    val cappuccinoRecipe = Recipe("cappuccino", 50, 50, 30) { Brews.cappuccino }
 }
 
 /**
@@ -18,9 +19,7 @@ object WellKnownRecipes {
  * tailor made for each customer. This is possible by configuring a list
  * of recipes when building the machine.
  */
-class CoffeeMakerV2(
-        private val recipes: List<Recipe>,
-        private val brewFactory: Map<String, () -> CoffeeBrew>) {
+class CoffeeMakerV2(private val recipes: List<Recipe>) {
     var milkQuantityInMl: Int = 0
         private set
     var waterQuantityInMl: Int = 0
@@ -30,14 +29,8 @@ class CoffeeMakerV2(
 
     companion object {
         fun createGoodOldCoffeeMakerV1() = CoffeeMakerV2(
-                recipes = listOf(
-                        WellKnownRecipes.espressoRecipe,
-                        WellKnownRecipes.cappuccinoRecipe
-                ),
-                brewFactory = mapOf(
-                        "espresso" to { Brews.espresso },
-                        "cappuccino" to { Brews.cappuccino }
-                ))
+                listOf(WellKnownRecipes.espressoRecipe, WellKnownRecipes.cappuccinoRecipe)
+        )
     }
 
     val coffeeMenu: List<String>
@@ -73,14 +66,11 @@ class CoffeeMakerV2(
         coffeeQuantityInGrams -= recipe.coffeeQuantityInGrams
         milkQuantityInMl -= recipe.milkQuantityInMl
 
-        return brewFactory[coffeeType]!!.invoke()
+        return recipe.generator.invoke()
     }
 
     private fun canBeBrewed(coffeeType: String): Boolean {
         if (!recipes.any { recipe -> recipe.name == coffeeType }) {
-            return false
-        }
-        if (!brewFactory.containsKey(coffeeType)) {
             return false
         }
         return true
