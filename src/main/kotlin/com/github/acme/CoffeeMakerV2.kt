@@ -7,11 +7,6 @@ data class Recipe(
         val milkQuantityInMl: Int,
         val generator: () -> CoffeeBrew)
 
-object WellKnownRecipes {
-    val espressoRecipe = Recipe("espresso", 50, 30, 0) { Brews.espresso }
-    val cappuccinoRecipe = Recipe("cappuccino", 50, 50, 30) { Brews.cappuccino }
-}
-
 /**
  * Make me some coffee!
  *
@@ -26,12 +21,6 @@ class CoffeeMakerV2(private val recipes: List<Recipe>) {
         private set
     var coffeeQuantityInGrams: Int = 0
         private set
-
-    companion object {
-        fun createGoodOldCoffeeMakerV1() = CoffeeMakerV2(
-                listOf(WellKnownRecipes.espressoRecipe, WellKnownRecipes.cappuccinoRecipe)
-        )
-    }
 
     val coffeeMenu: List<String>
         get() = recipes.map { it.name }
@@ -98,4 +87,3 @@ class CoffeeMakerV2(private val recipes: List<Recipe>) {
     }
 }
 
-class NotEnoughWaterForCleanupException : NotEnoughWaterException()

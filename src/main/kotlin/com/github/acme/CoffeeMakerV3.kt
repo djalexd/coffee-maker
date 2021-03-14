@@ -139,3 +139,5 @@ class CoffeeMakerV3(
         }
     }
 }
+
+class NotEnoughWaterForCleanupException : NotEnoughWaterException()
