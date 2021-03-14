@@ -2,7 +2,6 @@ package com.github.acme
 
 import org.junit.Assert
 import org.junit.Test
-import java.lang.NullPointerException
 
 class CoffeeMakerV1Test {
 
