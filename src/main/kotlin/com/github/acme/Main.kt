@@ -1,18 +1,29 @@
 package com.github.acme
 
+import com.github.acme.MeasurementUnits.Gram
+import com.github.acme.MeasurementUnits.Millilitre
+
+infix fun Double.to(unit: MeasurementUnit): Quantity = Quantity.of(this, unit)
+
 // Entry-point in your app
 fun main() {
-    val myOwnMachine = CoffeeMakerV1()
-    myOwnMachine.addCoffee(200)
-    myOwnMachine.addMilk(90)
-    myOwnMachine.addWater(500)
-    println(myOwnMachine.toString())
-    Thread.sleep(5)
-//    println("We just made a: ${myOwnMachine.makeMilkFoam(2)}")
-    println(myOwnMachine.toString())
-    var brewed = myOwnMachine.brew("cappuccino")
-    println("We just made a: ${brewed.toString()}")
-    brewed = myOwnMachine.brew("espresso")
-    println("We just made a: ${brewed.toString()}")
-    println(myOwnMachine.toString())
+    val milkReservoir = FixedSizeTankLiquidSourceV2(1000.0 to Millilitre)
+    val waterSource = TapLiquidSourceV2()
+    val coffeeContainer = CoffeeContainerV2(500.0 to Gram)
+
+    val myOwnMachine = CoffeeMakerV4(
+            milkSource = milkReservoir,
+            waterSource = waterSource,
+            coffeeContainer = coffeeContainer,
+            recipes = RecipeLoader.fromYaml(readFile("recipes.yaml")),
+            toppings = ToppingLoader.fromYaml(readFile("toppings.yaml"))
+    )
+
+    milkReservoir.topUp(1000.0 to Millilitre)
+    coffeeContainer.topUp(1000.0 to Gram)
+
+    val coffee = myOwnMachine.brew("medium latte machiatto with espresso and whip cream")
+    println(coffee)
 }
+
+private fun readFile(fileName: String) = CoffeeMakerV4::class.java.classLoader.getResourceAsStream(fileName)!!
