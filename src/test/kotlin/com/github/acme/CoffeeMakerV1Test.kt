@@ -53,19 +53,17 @@ class CoffeeMakerV1Test {
 
     @Test(expected = NotEnoughMilkException::class)
     fun `test that coffee maker returns not enough milk exception when making cappuccino`() {
-        val coffeeMakerV1 = CoffeeMakerV1()
-        coffeeMakerV1.addWater(100)
-        coffeeMakerV1.addCoffee(100)
+        val coffeeMakerV1 = createSomeCoffeeMaker(100, null, 100)
         coffeeMakerV1.brew("cappuccino")
     }
 
     @Test
     fun `test that coffee maker substracts all ingredients when making cappuccino`() {
-        val coffeeMakerV1 = CoffeeMakerV1()
-        coffeeMakerV1.addWater(100)
-        coffeeMakerV1.addCoffee(100)
-        coffeeMakerV1.addMilk(100)
+        // given
+        val coffeeMakerV1 = createSomeCoffeeMaker(100, 100, 100)
+        // when
         coffeeMakerV1.brew("cappuccino")
+        // then
         Assert.assertEquals(50, coffeeMakerV1.waterQuantityInMl)
         Assert.assertEquals(50, coffeeMakerV1.coffeeQuantityInGrams)
         Assert.assertEquals(70, coffeeMakerV1.milkQuantityInMl)
@@ -77,6 +75,27 @@ class CoffeeMakerV1Test {
         val brew = coffeeMakerV1.brew("Latte")
         Assert.assertNull(brew)
     }
+
+
+
+    private fun createSomeCoffeeMaker(
+            waterQuantityInMl: Int? = null,
+            milkQuantityInMl: Int? = null,
+            coffeeInGrams: Int? = null
+    ): CoffeeMakerV1 {
+        val coffeeMakerV1 = CoffeeMakerV1()
+        if (waterQuantityInMl != null) {
+            coffeeMakerV1.addWater(waterQuantityInMl)
+        }
+        if (coffeeInGrams != null) {
+            coffeeMakerV1.addCoffee(coffeeInGrams)
+        }
+        if (milkQuantityInMl != null) {
+            coffeeMakerV1.addMilk(milkQuantityInMl)
+        }
+        return coffeeMakerV1
+    }
+
 
 }
 

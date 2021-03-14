@@ -22,9 +22,6 @@ class CoffeeMakerV2(private val recipes: List<Recipe>) {
     var coffeeQuantityInGrams: Int = 0
         private set
 
-    val coffeeMenu: List<String>
-        get() = recipes.map { it.name }
-
     /**
      *
      * @param coffeeType
